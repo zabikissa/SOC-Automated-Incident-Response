@@ -1,0 +1,17 @@
+# Création d’alerte Splunk pour SOAR Phantom
+
+- Filtre événements ClamAV FOUND
+- Map champs en CEF pour Phantom
+- Exemple SPL :
+
+index=clamav_logs sourcetype=clamav "FOUND"
+| rex field=_raw "(?<file>/[^\s:]+): (?<signature>[^\(]+)\((?<file_hash>[0-9a-f]{32})"
+| eval cef_sourceHost=host
+| eval cef_file=file
+| eval cef_signature=signature
+| eval cef_severity="High"
+| eval cef_vendor="ClamAV"
+| eval cef_product="Antivirus"
+| eval cef_eventCategory="Malware"
+| table _time cef_sourceHost cef_file file_hash cef_signature cef_severity cef_vendor cef_product cef_eventCategory
+
